@@ -41,7 +41,7 @@ router.get('/notes/:id', (req, res, next) => {
     .orderBy('notes.id')
     .then(results => {
       if(results.length > 0) {
-        res.json(results);
+        res.json(results[0]);
       }else{
         next();
       }
