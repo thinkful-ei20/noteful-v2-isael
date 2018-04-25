@@ -4,7 +4,7 @@ const express = require('express');
 const morgan = require('morgan');
 
 const { PORT } = require('./config');
-
+const folderRouter = require('./routes/folders.router');
 const notesRouter = require('./routes/notes.router');
 
 // Create an Express application
@@ -20,6 +20,8 @@ app.use(express.static('public'));
 
 // Parse request body
 app.use(express.json());
+
+app.use('/api', folderRouter);
 
 // Mount router on "/api"
 app.use('/api', notesRouter);
