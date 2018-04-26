@@ -64,11 +64,14 @@ const knex = require('../knex');
 //   })
 //   .catch(err => console.log(err));
 
-let newItem = {name: 'isael432'};
-knex('folders')
-  .insert(newItem)
-  .returning(['folders.id', 'name'])
-  .then(results => {
-    console.log(JSON.stringify(results,null,2));
-  })
-  .catch(err => console.log(err));
+// let newItem = {name: 'isael432'};
+// knex('folders')
+//   .insert(newItem)
+//   .returning(['folders.id', 'name'])
+//   .then(results => {
+//     console.log(JSON.stringify(results,null,2));
+//   })
+//   .catch(err => console.log(err));
+const noteId = 99;
+const result = [34, 56, 78].map(tagId => ({ note_id: noteId, tag_id: tagId }));
+console.log(`insert: ${result} into notes_tags`);
