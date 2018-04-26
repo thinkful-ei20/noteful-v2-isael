@@ -65,7 +65,9 @@ router.post('/tags', (req, res, next) => {
     .then((results) => {
       // Uses Array index solution to get first item in results array
       const result = results[0];
-      res.location(`${req.originalUrl}/${result.id}`).status(201).json(result);
+      res.location(`${req.originalUrl}/${result.id}`)
+        .status(201)
+        .json(result);
     })
     .catch(err => next(err));
 });
