@@ -55,17 +55,6 @@ router.get('/notes/:id', (req, res, next) => {
     })
     .catch(err => next(err));
 
-  // notes.find(id)
-  //   .then(item => {
-  //     if (item) {
-  //       res.json(item);
-  //     } else {
-  //       next();
-  //     }
-  //   })
-  //   .catch(err => {
-  //     next(err);
-  //   });
 });
 
 // Put update an item
@@ -91,7 +80,7 @@ router.put('/notes/:id', (req, res, next) => {
 
   knex('notes')
     .update(updateObj)
-    .where({id: id})
+    .where({'notes.id':id})
     .returning('id')
     .then(([id]) => {
       return knex('notes')
@@ -136,15 +125,6 @@ router.post('/notes', (req, res, next) => {
         .json(result);
     })
     .catch(err => next(err));
-  // notes.create(newItem)
-  //   .then(item => {
-  //     if (item) {
-  //       res.location(`http://${req.headers.host}/notes/${item.id}`).status(201).json(item);
-  //     }
-  //   })
-  //   .catch(err => {
-  //     next(err);
-  //   });
 });
 
 // Delete an item
@@ -158,13 +138,6 @@ router.delete('/notes/:id', (req, res, next) => {
       res.status(204).end();
     });
 
-  // notes.delete(id)
-  //   .then(() => {
-  //     res.sendStatus(204);
-  //   })
-  //   .catch(err => {
-  //     next(err);
-  //   });
 });
 
 module.exports = router;
