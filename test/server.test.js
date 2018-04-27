@@ -240,22 +240,29 @@ describe('Noteful App', function () {
   describe('PUT /api/notes/:id', function () {
 
     it('should update the note', function () {
+      let id = 1000;
       const updateItem = {
         'title': 'What about dogs?!',
         'content': 'woof woof'
       };
+      let body;
       return chai.request(app)
-        .put('/api/notes/1005')
+        .put(`/api/notes/${id}`)
         .send(updateItem)
-        .then(function (res) {
+        .then(res => {
+          body = res.body;
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
           expect(res.body).to.include.keys('id', 'title', 'content');
-
-          expect(res.body.id).to.equal(1005);
+          expect(res.body.id).to.equal(id);
           expect(res.body.title).to.equal(updateItem.title);
           expect(res.body.content).to.equal(updateItem.content);
+          return knex('notes').where({'notes.id': res.body.id});
+        })
+        .then(([res])=> {
+          expect(res.title).to.equal(body.title);
+          expect(res.content).to.equal(body.content);
         });
     });
 
