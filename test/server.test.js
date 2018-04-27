@@ -49,19 +49,19 @@ describe('Noteful App', function () {
     return knex.destroy(); // destroy the connection
   });
 
-  // describe('Static app', function () {
+  describe('Static app', function () {
 
-  //   it('GET request "/" should return the index page', function () {
-  //     return chai.request(app)
-  //       .get('/')
-  //       .then(function (res) {
-  //         expect(res).to.exist;
-  //         expect(res).to.have.status(200);
-  //         expect(res).to.be.html;
-  //       });
-  //   });
+    it('GET request "/" should return the index page', function () {
+      return chai.request(app)
+        .get('/')
+        .then(function (res) {
+          expect(res).to.exist;
+          expect(res).to.have.status(200);
+          expect(res).to.be.html;
+        });
+    });
 
-  // });
+  });
 
   describe('404 handler', function () {
 
@@ -94,17 +94,21 @@ describe('Noteful App', function () {
     });
 
     it('should return a list with the correct right fields', function () {
-      return chai.request(app)
-        .get('/api/notes')
-        .then(function (res) {
+      return knex('notes')
+        .select()
+        .then(res => {
+          //console.log(res);
+          res.forEach(item => {
+            expect(item).to.include.keys('id', 'title', 'content');
+            expect(item).to.be.a('object');
+          });
+          return chai.request(app).get('/api/notes');
+        })
+        .then(res => {
           expect(res).to.have.status(200);
           expect(res).to.be.json;
-          expect(res.body).to.be.a('array');
           expect(res.body).to.have.length(10);
-          res.body.forEach(function (item) {
-            expect(item).to.be.a('object');
-            expect(item).to.include.keys('id', 'title', 'content');
-          });
+          expect(res.body).to.be.a('array');
         });
     });
 
@@ -126,13 +130,18 @@ describe('Noteful App', function () {
     });
 
     it('should return an empty array for an incorrect query', function () {
-      return chai.request(app)
-        .get('/api/notes?searchTerm=Not%20a%20Valid%20Search')
-        .then(function (res) {
-          expect(res).to.have.status(200);
+      let searchTerm = 'isael';
+      return knex('notes')
+        .select()
+        .where({'notes.title': `%${searchTerm}%`})
+        .then(res => {
+          expect(res).to.be.a('array');
+          expect(res).to.have.length(0);
+          return chai.request(app).get(`/api/notes?searchTerm=${searchTerm}`);
+        })
+        .then(res => {
           expect(res).to.be.json;
-          expect(res.body).to.be.a('array');
-          expect(res.body).to.have.length(0);
+          expect(res).to.have.status(200);
         });
     });
 
@@ -140,7 +149,7 @@ describe('Noteful App', function () {
 
   describe('GET /api/notes/:id', function () {
 
-     it('should return correct notes', function () {
+    it('should return correct notes', function () {
 
       const dataPromise = knex.first()
         .from('notes')
@@ -161,8 +170,15 @@ describe('Noteful App', function () {
     });
 
     it('should respond with a 404 for an invalid id', function () {
-      return chai.request(app)
-        .get('/DOES/NOT/EXIST')
+      const id = 123214;
+      return knex('notes')
+        .select()
+        .where({'notes.id': id})
+        .then(res => {
+          expect(res).to.be.a('array');
+          expect(res).to.have.length(0);
+          return chai.request(app).get(`/api/notes/${id}`);
+        })
         .then(res => {
           expect(res).to.have.status(404);
         });
@@ -269,9 +285,15 @@ describe('Noteful App', function () {
   describe('DELETE  /api/notes/:id', function () {
 
     it('should delete an item by id', function () {
-      return chai.request(app)
-        .delete('/api/notes/1005')
-        .then(function (res) {
+      const id = 1000;
+      return knex('notes')
+        .del()
+        .where({'notes.id': id})
+        .then(res => {
+          expect(res).to.equal(1);
+          return chai.request(app).delete(`/api/notes/${id}`);
+        })
+        .then(res => {
           expect(res).to.have.status(204);
         });
     });
