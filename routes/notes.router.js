@@ -117,14 +117,6 @@ router.put('/notes/:id', (req, res, next) => {
         .leftJoin('notes_tags', 'notes.id', 'notes_tags.note_id')
         .leftJoin('tags', 'tags.id', 'notes_tags.tag_id')
         .where('notes.id', noteId);
-      // return knex
-      //   .from('notes')
-      //   .select('notes.id', 'title', 'content',
-      //     'folders.id as folder_id', 'folders.name as folderName',
-      //     'tags.id as tagId', 'tags.name as tagName')
-      //   .leftJoin('folders', 'notes.folder_id', 'folders.id')
-      //   .leftJoin('tags', 'tags.id', 'notes_tags.tag_id')
-      //   .where('notes.id', noteId);
     })
     .then(results => {
       if(results){
@@ -137,18 +129,6 @@ router.put('/notes/:id', (req, res, next) => {
       }
     })
     .catch(err => next(err));
-  // .where({'notes.id':id})
-  // .returning('id')
-  // .then(([id]) => {
-  //   return knex('notes')
-  //     .select('notes.id', 'title', 'content', 'folder_id', 'folders.name as folder_name')
-  //     .leftJoin('folders', 'notes.folder_id', 'folders.id')
-  //     .where({'notes.id': id});
-  // })
-  // .then( ([results]) => {
-  //   res.json(results);
-  // })
-  // .catch(err => next(err));
 });
 
 // Post (insert) an item
