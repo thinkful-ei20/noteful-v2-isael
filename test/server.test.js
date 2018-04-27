@@ -42,7 +42,7 @@ describe('Environment', () => {
 describe('Noteful App', function () {
 
   beforeEach(function () {
-    return seedData('./db/noteful.sql');
+    return seedData('./db/noteful.sql');//, 'dev'
   });
 
   after(function () {
@@ -220,11 +220,18 @@ describe('Noteful App', function () {
       return chai.request(app)
         .post('/api/notes')
         .send(newItem)
+        .then(() => {
+          return chai.request(app).post('/api/notes').send(newItem);
+        })
         .then(res => {
           expect(res).to.have.status(400);
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
           expect(res.body.message).to.equal('Missing `title` in request body');
+        })
+        .catch(err => {
+          expect(err).to.throw();
+          expect(err).to.be.an('error');
         });
     });
 
