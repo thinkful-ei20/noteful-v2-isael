@@ -10,7 +10,7 @@ describe('Reality check', function(){
     expect(true).to.be.true;
   });
 });
-
+//added comment to test
 // describe('Get Notes', function () {
 //   it('should retrieve all the notes from the database', function (){
 //     return chai.request(app)
