@@ -49,19 +49,19 @@ describe('Noteful App', function () {
     return knex.destroy(); // destroy the connection
   });
 
-  describe('Static app', function () {
+  // describe('Static app', function () {
 
-    it('GET request "/" should return the index page', function () {
-      return chai.request(app)
-        .get('/')
-        .then(function (res) {
-          expect(res).to.exist;
-          expect(res).to.have.status(200);
-          expect(res).to.be.html;
-        });
-    });
+  //   it('GET request "/" should return the index page', function () {
+  //     return chai.request(app)
+  //       .get('/')
+  //       .then(function (res) {
+  //         expect(res).to.exist;
+  //         expect(res).to.have.status(200);
+  //         expect(res).to.be.html;
+  //       });
+  //   });
 
-  });
+  // });
 
   describe('404 handler', function () {
 
