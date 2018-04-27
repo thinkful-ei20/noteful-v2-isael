@@ -122,7 +122,7 @@ router.put('/notes/:id', (req, res, next) => {
       if(results){
         const hydrated = hydrateNotes(results)[0];
         res.location(`${req.originalUrl}/${hydrated.id}`)
-          .status(201)
+          .status(200)
           .json(hydrated);
       }else{
         next();
