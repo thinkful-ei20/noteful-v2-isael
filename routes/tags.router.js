@@ -37,13 +37,20 @@ router.put('/tags/:id', (req, res, next) => {
     err.status = 400;
     next(err);
   }
-
+  
   knex('tags')
     .update(updateObj)
     .where({'tags.id': id})
     .returning(['id', 'name'])
-    .then(results => res.json(results[0]))
-    .catch(err => next(err));
+    .then(results => {
+      if(results.length){
+        res.json(results[0]);
+      }else{
+        res.status(404).send({error: 'invalid Id'}).end();
+        next();
+      }
+    })
+    .catch((err) => next(err));
 
 });
 
