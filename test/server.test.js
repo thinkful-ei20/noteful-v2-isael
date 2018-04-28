@@ -147,6 +147,44 @@ describe('Noteful App', function () {
 
   });
 
+  describe('GET /api/tags', function () {
+
+    it('should return the default count of tags ', function () {
+      let count; 
+      return knex('tags')
+        .count()
+        .then(([result]) => {
+          count = Number(result.count);
+          return chai.request(app).get('/api/tags');
+        })
+        .then(function (res){
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('array');
+          expect(res.body).to.have.length(count);
+        });
+    });
+  });
+
+  describe('GET /api/folders', function () {
+
+    it('should return the default count of folders ', function () {
+      let count; 
+      return knex('folders')
+        .count()
+        .then(([result]) => {
+          count = Number(result.count);
+          return chai.request(app).get('/api/folders');
+        })
+        .then(function (res){
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('array');
+          expect(res.body).to.have.length(count);
+        });
+    });
+  });
+
   describe('GET /api/notes/:id', function () {
 
     it('should return correct notes', function () {
