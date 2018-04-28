@@ -239,6 +239,108 @@ describe('Noteful App', function () {
 
   });
 
+  describe('POST /api/tags', function () {
+
+    it('should create and return a new item when provided valid data', function () {
+      const newItem = {
+        'name': 'test432'
+      };
+      let body;
+      return chai.request(app)
+        .post('/api/tags')
+        .send(newItem)
+        .then(function (res) {
+          body = res.body;
+          expect(res).to.have.status(201);
+          expect(res).to.have.header('location');
+          expect(res).to.be.json;
+          expect(body).to.be.a('object');
+          expect(body).to.include.keys('id', 'name');
+          return knex.select().from('tags').where('id', body.id);
+        })
+        .then(([data]) => {
+          expect(body.title).to.equal(data.title);
+          expect(body.content).to.equal(data.content);
+        });
+    });
+
+    it('should return an error when missing "name" field', function () {
+      const newItem = {
+        'foo': 'bar'
+      };
+      return chai.request(app)
+        .post('/api/tags')
+        .send(newItem)
+        .then(res => {
+          expect(res).to.have.status(400);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('object');
+          expect(res.body.message).to.equal('Missing `name` in request body');
+          return knex('tags').select().where({'tags.name': !newItem.name ? '' : newItem.name});
+        })
+        .then((res) => {
+          expect(res).to.be.a('array');
+          expect(res).to.have.length(0);
+        })
+        .catch(err => {
+          expect(err).to.throw();
+          expect(err).to.be.an('error');
+        });
+    });
+
+  });
+
+  describe('POST /api/folders', function () {
+
+    it('should create and return a new item when provided valid data', function () {
+      const newItem = {
+        'name': 'test432'
+      };
+      let body;
+      return chai.request(app)
+        .post('/api/folders')
+        .send(newItem)
+        .then(function (res) {
+          body = res.body;
+          expect(res).to.have.status(201);
+          expect(res).to.have.header('location');
+          expect(res).to.be.json;
+          expect(body).to.be.a('object');
+          expect(body).to.include.keys('id', 'name');
+          return knex.select().from('folders').where('id', body.id);
+        })
+        .then(([data]) => {
+          expect(body.title).to.equal(data.title);
+          expect(body.content).to.equal(data.content);
+        });
+    });
+
+    it('should return an error when missing "name" field', function () {
+      const newItem = {
+        'foo': 'bar'
+      };
+      return chai.request(app)
+        .post('/api/folders')
+        .send(newItem)
+        .then(res => {
+          expect(res).to.have.status(400);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('object');
+          expect(res.body.message).to.equal('missing name');
+          return knex('folders').select().where({'folders.name': !newItem.name ? '' : newItem.name});
+        })
+        .then((res) => {
+          expect(res).to.be.a('array');
+          expect(res).to.have.length(0);
+        })
+        .catch(err => {
+          expect(err).to.throw();
+          expect(err).to.be.an('error');
+        });
+    });
+
+  });
+
   describe('PUT /api/notes/:id', function () {
 
     it('should update the note', function () {
