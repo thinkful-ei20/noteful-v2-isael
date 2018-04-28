@@ -186,6 +186,84 @@ describe('Noteful App', function () {
 
   });
 
+  describe('GET /api/tags/:id', function () {
+
+    it('should return correct tag', function () {
+
+      const dataPromise = knex.first()
+        .from('tags')
+        .where('id', 1);
+
+      const apiPromise = chai.request(app)
+        .get('/api/tags/1');
+
+      return Promise.all([dataPromise, apiPromise])
+        .then(function ([data, res]) {
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.include.keys('id', 'name');
+          expect(res.body.id).to.equal(1);
+          expect(res.body.name).to.equal(data.name);
+        });
+    });
+
+    it('should respond with a 404 for an invalid id', function () {
+      const id = 123214;
+      return knex('tags')
+        .select()
+        .where({'tags.id': id})
+        .then(res => {
+          expect(res).to.be.a('array');
+          expect(res).to.have.length(0);
+          return chai.request(app).get(`/api/tags/${id}`);
+        })
+        .then(res => {
+          expect(res).to.have.status(404);
+        });
+    });
+
+  });
+
+  describe('GET /api/folders/:id', function () {
+
+    it('should return correct folder', function () {
+
+      const dataPromise = knex.first()
+        .from('folders')
+        .where('id', 100);
+
+      const apiPromise = chai.request(app)
+        .get('/api/folders/100');
+
+      return Promise.all([dataPromise, apiPromise])
+        .then(function ([data, res]) {
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.include.keys('id', 'name');
+          expect(res.body.id).to.equal(100);
+          expect(res.body.name).to.equal(data.name);
+        });
+    });
+
+    it('should respond with a 404 for an invalid id', function () {
+      const id = 123214;
+      return knex('folders')
+        .select()
+        .where({'folders.id': id})
+        .then(res => {
+          expect(res).to.be.a('array');
+          expect(res).to.have.length(0);
+          return chai.request(app).get(`/api/folders/${id}`);
+        })
+        .then(res => {
+          expect(res).to.have.status(404);
+        });
+    });
+
+  });
+
   describe('POST /api/notes', function () {
 
     it('should create and return a new item when provided valid data', function () {
