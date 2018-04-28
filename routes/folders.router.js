@@ -44,7 +44,12 @@ router.put('/folders/:id', (req, res, next) => {
     .where({'folders.id': id})
     .returning(['id', 'folders.name'])
     .then(results => {
-      res.json(results[0]);
+      if(results.length){
+        res.json(results[0]);
+      }else{
+        res.status(404).send({error: 'invalid Id'}).end();
+        next();
+      }
     })
     .catch(err => next(err));
 });
