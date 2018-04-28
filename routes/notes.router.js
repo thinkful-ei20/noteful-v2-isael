@@ -84,15 +84,14 @@ router.put('/notes/:id', (req, res, next) => {
     content,
     folder_id: folderId
   };
-  
-  //console.log(JSON.stringify(updateObj, null, 2));
+  let noteId = id;
   /***** Never trust users - validate input *****/
   if (!updateObj.title) {
     const err = new Error('Missing `title` in request body');
     err.status = 400;
     return next(err);
   }
-  let noteId = id;
+ 
   knex('notes')
     .update(updateObj)
     .where({'notes.id': noteId})
@@ -125,10 +124,15 @@ router.put('/notes/:id', (req, res, next) => {
           .status(200)
           .json(hydrated);
       }else{
+        res.sendStatus(404).json(res);
         next();
       }
     })
-    .catch(err => next(err));
+    .catch((err) => {
+      err = new Error('Invalid Id');
+      err.status = 404;
+      return next(err);
+    });
 });
 
 // Post (insert) an item

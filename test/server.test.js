@@ -220,14 +220,16 @@ describe('Noteful App', function () {
       return chai.request(app)
         .post('/api/notes')
         .send(newItem)
-        .then(() => {
-          return chai.request(app).post('/api/notes').send(newItem);
-        })
         .then(res => {
           expect(res).to.have.status(400);
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
           expect(res.body.message).to.equal('Missing `title` in request body');
+          return knex('notes').select().where({'notes.title': !newItem.title ? '' : newItem.title});
+        })
+        .then((res) => {
+          expect(res).to.be.a('array');
+          expect(res).to.have.length(0);
         })
         .catch(err => {
           expect(err).to.throw();
@@ -267,30 +269,42 @@ describe('Noteful App', function () {
     });
 
     it('should respond with a 404 for an invalid id', function () {
+      const id = 321312312;
       const updateItem = {
         'title': 'What about dogs?!',
         'content': 'woof woof'
       };
       return chai.request(app)
-        .put('/DOES/NOT/EXIST')
+        .put(`/api/notes/${id}`)
         .send(updateItem)
         .then(res => {
           expect(res).to.have.status(404);
+          return knex('notes').select().where({'notes.id': id});
+        })
+        .then(res => {
+          expect(res).to.be.a('array');
+          expect(res).to.have.length(0);
         });
     });
 
     it('should return an error when missing "title" field', function () {
+      let id = 1000;
       const updateItem = {
         'foo': 'bar'
       };
       return chai.request(app)
-        .put('/api/notes/1005')
+        .put(`/api/notes/${id}`)
         .send(updateItem)
         .then(res => {
           expect(res).to.have.status(400);
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
           expect(res.body.message).to.equal('Missing `title` in request body');
+          return knex('notes').select().where({'notes.title': !updateItem.title ? '' : updateItem.title});
+        })
+        .then(res => {
+          expect(res).to.be.a('array');
+          expect(res).to.have.length(0);
         });
     });
 
